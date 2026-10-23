@@ -1,0 +1,99 @@
+<div class="mr-wrap">
+ <header class="mr-head">
+  <div><h1><i class="fa-solid fa-book-open"></i> MR · 5E → Legend in the Mist</h1>
+  <p>Conversión narrativa asistida · Español de España · No modifica personajes originales</p></div>
+  {{#if hasDraft}}<button type="button" data-action="clear" title="Empezar otra conversión"><i class="fa-solid fa-arrow-rotate-left"></i> Nuevo</button>{{/if}}
+ </header>
+ <section class="mr-scroll">
+  {{#if notice}}<p class="mr-notice" role="status">{{notice}}</p>{{/if}}
+  {{#if isOther}}<p class="mr-alert">Este módulo debe abrirse en un mundo D&D 5e o Legend in the Mist.</p>{{/if}}
+  {{#unless hasDraft}}
+   <div class="mr-grid mr-import">
+    <section class="mr-panel">
+     <h2>1 · Personaje de origen</h2>
+     {{#if isDnd}}
+      <p>Selecciona un actor de este mundo y expórtalo. Podrás importarlo en el mundo de Legend in the Mist.</p>
+      <select id="mr-actor-select" aria-label="Personaje de D&D">
+       {{#each actors}}<option value="{{id}}">{{name}}</option>{{/each}}
+      </select>
+      <button type="button" data-action="export-dnd"><i class="fa-solid fa-file-export"></i> Exportar actor de D&D 5e</button>
+     {{else}}
+      <p>Abre este módulo en el mundo D&D para exportar directamente a uno de tus personajes.</p>
+     {{/if}}
+     <h3>Importar un JSON de personaje</h3>
+     <label for="mr-file">Archivo JSON de Foundry, exportación MR o borrador guardado</label>
+     <input type="file" accept=".json,application/json" id="mr-file">
+    </section>
+    <section class="mr-panel">
+     <h2>2 · Otras vías de entrada</h2>
+     <label for="mr-json-paste">Pegar contenido JSON</label>
+     <textarea id="mr-json-paste" rows="7" spellcheck="false" placeholder="Pega aquí un JSON de actor D&D 5e o un borrador anterior..."></textarea>
+     <button type="button" data-action="load-paste"><i class="fa-solid fa-file-import"></i> Importar JSON pegado</button>
+     <button type="button" class="mr-secondary" data-action="show-manual"><i class="fa-solid fa-pencil"></i> {{#if manualOpen}}Cerrar formulario manual{{else}}Introducir un personaje manualmente{{/if}}</button>
+    </section>
+   </div>
+   {{#if manualOpen}}
+    <section class="mr-panel mr-manual"><h2>Personaje manual</h2>
+     <div class="mr-grid">
+      <label>Nombre <input id="mr-name" type="text" placeholder="Nombre del héroe"></label>
+      <label>Nivel <input id="mr-level" type="number" min="1" max="20" value="1"></label>
+      <label>Clase <input id="mr-class" type="text" placeholder="Ej.: Bardo"></label>
+      <label>Pueblo / especie <input id="mr-race" type="text" placeholder="Ej.: Humano"></label>
+      <label>Trasfondo <input id="mr-background" type="text" placeholder="Ej.: Noble"></label>
+      <label>Conjuros (separados por comas) <textarea id="mr-spells" rows="2"></textarea></label>
+      <label>Equipo (separado por comas) <textarea id="mr-equipment" rows="2"></textarea></label>
+      <label>Biografía <textarea id="mr-bio" rows="2"></textarea></label>
+     </div>
+     <button type="button" data-action="load-manual"><i class="fa-solid fa-wand-magic-sparkles"></i> Crear borrador editable</button>
+    </section>
+   {{/if}}
+   <p class="mr-info">Los datos narrativos sugeridos proceden exclusivamente del personaje importado. Las etiquetas, debilidades y Gestas deben revisarse y completarse; no se redistribuyen los conjuntos de texto del suplemento de Son of Oak.</p>
+  {{else}}
+   <section class="mr-panel mr-source">
+    <h2>{{character.name}} <small>D&D 5e · Nivel {{character.level}}</small></h2>
+    <p><b>Origen:</b> {{character.race}} · <b>Trasfondo:</b> {{character.background}}</p>
+    {{#each classes}}<span class="mr-pill">{{name}} {{level}}</span>{{/each}}
+    {{#if features.length}}<p><strong>Dotes y rasgos:</strong> {{#each features}}{{this}}{{#unless @last}} · {{/unless}}{{/each}}</p>{{/if}}
+    {{#if spells.length}}<p><strong>Conjuros de origen:</strong> {{#each spells}}{{this}}{{#unless @last}} · {{/unless}}{{/each}}</p>{{/if}}
+   </section>
+   {{#if diagnostics.length}}<section class="mr-panel mr-advice"><h3><i class="fa-solid fa-triangle-exclamation"></i> Advertencias de interpretación</h3>
+    <ul>{{#each diagnostics}}<li>{{this}}</li>{{/each}}</ul></section>{{/if}}
+   <section class="mr-cards">
+   {{#each themes}}
+    <article class="mr-panel mr-card">
+     <header><h2>{{slotLabel}}</h2><span class="mr-pill">{{kind}}</span></header>
+     <label>Título del Libro de tema
+      <input type="text" data-field="title" data-index="{{index}}" value="{{title}}"></label>
+     <label>Poderío
+      <select data-field="might" data-index="{{index}}">
+       {{#each mightChoices}}<option value="{{id}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}
+      </select></label>
+     <div class="mr-tags"><strong>Etiquetas de poder</strong>
+      {{#if isSpell}}<p>En Magia se eligen tres etiquetas de conjuro, sin etiqueta de título adicional.</p>{{else}}<p>El título también cuenta como etiqueta de poder; completa dos más.</p>{{/if}}
+      {{#each powerRows}}
+       <label>Etiqueta {{index}}
+        <input type="text" data-field="power" data-index="{{../index}}" data-power-index="{{index}}" value="{{name}}" placeholder="Etiqueta a revisar"></label>
+      {{/each}}
+     </div>
+     <label>Etiqueta de debilidad <input type="text" data-field="weakness" data-index="{{index}}" value="{{weakness}}" placeholder="Un límite narrativo relevante"></label>
+     <label>Gesta <textarea data-field="quest" data-index="{{index}}" rows="2" placeholder="¿Qué desea o persigue este héroe?">{{quest}}</textarea></label>
+     <label>Historia del tema <textarea data-field="story" data-index="{{index}}" rows="2" placeholder="Contexto de este aspecto del héroe">{{story}}</textarea></label>
+    </article>
+   {{/each}}
+   </section>
+   <section class="mr-panel">
+    <h2>Equipo, retrato y anotaciones</h2>
+    <label>Etiqueta de Mochila <input type="text" data-field="backpack" value="{{backpack}}"></label>
+    <label>Notas para el Narrador <textarea data-field="notes" rows="3">{{notes}}</textarea></label>
+    <label class="mr-check"><input type="checkbox" data-field="portrait" {{#if includePortrait}}checked{{/if}}> Conservar ruta del retrato (solo si existe en el mundo destino)</label>
+   </section>
+   {{#if problems.length}}<section class="mr-panel mr-advice"><h3>Antes de crear el héroe</h3>
+    <ul>{{#each problems}}<li>{{this}}</li>{{/each}}</ul></section>{{/if}}
+   <footer class="mr-foot">
+    <button type="button" class="mr-secondary" data-action="save-draft"><i class="fa-solid fa-floppy-disk"></i> Guardar borrador</button>
+    <button type="button" class="mr-secondary" data-action="save-actor"><i class="fa-solid fa-file-export"></i> Exportar ficha JSON</button>
+    {{#if isLitm}}<button type="button" data-action="create-actor" {{#if problems.length}}disabled{{/if}}><i class="fa-solid fa-user-plus"></i> Crear héroe nativo en LitM</button>{{/if}}
+   </footer>
+  {{/unless}}
+ </section>
+</div>

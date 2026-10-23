@@ -1,0 +1,36 @@
+name: Verificar y publicar módulo Foundry
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Comprobar sintaxis
+        run: |
+          node --check modules/mr-5e-to-litm/scripts/main.mjs
+          node --check modules/mr-5e-to-litm/scripts/core.mjs
+      - name: Ejecutar pruebas
+        run: node --test tests/core.test.mjs
+      - name: Empaquetar
+        run: |
+          mkdir -p dist/mr-5e-to-litm
+          cp -a modules/mr-5e-to-litm/. dist/mr-5e-to-litm/
+          (cd dist && zip -qr mr-5e-to-litm.zip mr-5e-to-litm)
+          cp modules/mr-5e-to-litm/module.json dist/module.json
+      - name: Publicar beta
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view v0.1.0 >/dev/null 2>&1; then
+            echo 'La versión v0.1.0 ya existe; se conserva sin sobrescribir.'
+          else
+            gh release create v0.1.0 dist/module.json dist/mr-5e-to-litm.zip --target "$GITHUB_SHA" --title 'MR 5E a LitM v0.1.0 (beta)' --notes 'Beta pública. Conversión narrativa asistida; revisa los cuatro libros de tema y las rutinas antes de jugar. No contiene traducciones del suplemento.'
+          fi

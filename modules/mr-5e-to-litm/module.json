@@ -1,0 +1,28 @@
+{
+  "id": "mr-5e-to-litm",
+  "title": "MR · De D&D 5e a Legend in the Mist",
+  "description": "Conversión asistida de personajes D&D 5e a actores nativos Legend in the Mist. Castellano.",
+  "version": "0.1.0",
+  "authors": [
+    {
+      "name": "Manu Romera",
+      "url": "https://github.com/ManuRomera"
+    }
+  ],
+  "compatibility": {
+    "minimum": "13",
+    "verified": "14"
+  },
+  "esmodules": [
+    "scripts/main.mjs"
+  ],
+  "styles": [
+    "styles/app.css"
+  ],
+  "url": "https://github.com/ManuRomera/mr-5e-to-litm",
+  "readme": "https://github.com/ManuRomera/mr-5e-to-litm#readme",
+  "manifest": "https://github.com/ManuRomera/mr-5e-to-litm/releases/latest/download/module.json",
+  "download": "https://github.com/ManuRomera/mr-5e-to-litm/releases/latest/download/mr-5e-to-litm.zip",
+  "bugs": "https://github.com/ManuRomera/mr-5e-to-litm/issues",
+  "license": "MIT"
+}
